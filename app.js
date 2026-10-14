@@ -9,7 +9,8 @@ const { SecurityService } = require('./src/security');
 dotenv.config({ path: path.join(__dirname, '.env'), quiet: true });
 
 function configuration(overrides = {}) {
-  return { host: process.env.HOST || (process.env.NODE_ENV === 'production' ? '0.0.0.0' : '127.0.0.1'), port: Number(process.env.PORT) || 3000, storage: process.env.SECURITY_STORAGE || 'postgres', postgresUrl: process.env.DATABASE_URL, postgresCaPath: process.env.PGSSLROOTCERT, mongoUri: process.env.MONGODB_URI, database: process.env.SECURITY_DATABASE || 'aikrhis_security', dbPath: process.env.SECURITY_SQLITE_PATH, secureCookies: process.env.NODE_ENV === 'production', origin: process.env.PUBLIC_ORIGIN,
+  const vercelOrigin = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined;
+  return { host: process.env.HOST || (process.env.NODE_ENV === 'production' ? '0.0.0.0' : '127.0.0.1'), port: Number(process.env.PORT) || 3000, storage: process.env.SECURITY_STORAGE || 'postgres', postgresUrl: process.env.DATABASE_URL, postgresCaPath: process.env.PGSSLROOTCERT, postgresPoolMax: Number(process.env.PGPOOL_MAX) || (process.env.VERCEL ? 1 : 5), mongoUri: process.env.MONGODB_URI, database: process.env.SECURITY_DATABASE || 'aikrhis_security', dbPath: process.env.SECURITY_SQLITE_PATH, secureCookies: process.env.NODE_ENV === 'production', origin: process.env.PUBLIC_ORIGIN || vercelOrigin,
     mail: { production: process.env.NODE_ENV === 'production', mode: process.env.MAIL_MODE, host: process.env.SMTP_HOST, port: process.env.SMTP_PORT, user: process.env.SMTP_USER, password: process.env.SMTP_PASSWORD, from: process.env.MAIL_FROM }, ...overrides };
 }
 function createServer(options = {}) {

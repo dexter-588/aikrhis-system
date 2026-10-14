@@ -1,5 +1,6 @@
 'use strict';
 const fs = require('node:fs');
+const path = require('node:path');
 const { randomUUID } = require('node:crypto');
 const { Pool } = require('pg');
 const collections = new Set(['users', 'sessions', 'activities', 'account_logs', 'security_events', 'alerts', 'settings']);
@@ -32,8 +33,13 @@ async function createPostgresStore(options) {
   // Configure TLS explicitly so URI sslmode options cannot override CA validation.
   for (const key of ['sslmode', 'sslrootcert', 'sslcert', 'sslkey']) url.searchParams.delete(key);
   const ssl = { rejectUnauthorized: true };
-  if (options.postgresCaPath) ssl.ca = fs.readFileSync(options.postgresCaPath, 'utf8');
-  const pool = new Pool({ connectionString: url.toString(), ssl, max: 5, connectionTimeoutMillis: 10000 });
+  if (options.postgresCaPath) {
+    const certificatePath = path.isAbsolute(options.postgresCaPath)
+      ? options.postgresCaPath
+      : path.resolve(__dirname, '..', options.postgresCaPath);
+    ssl.ca = fs.readFileSync(certificatePath, 'utf8');
+  }
+  const pool = new Pool({ connectionString: url.toString(), ssl, max: options.postgresPoolMax || 5, connectionTimeoutMillis: 10000 });
   pool.on('error', error => console.error('PostgreSQL pool error:', error.code || error.name));
   try {
     // A private schema keeps credentials and sessions outside Supabase's public Data API.
