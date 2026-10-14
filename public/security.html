@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Aikrhis // Security Center</title>
+  <link rel="stylesheet" href="cipherlab.css">
+  <link rel="stylesheet" href="game-theme.css?v=2">
+  <link rel="stylesheet" href="security.css?v=1">
+  <link rel="stylesheet" href="modern-theme.css?v=1">
+</head>
+<body class="security-page">
+  <aside id="admin-sidebar" class="admin-sidebar hidden" aria-label="Administrator navigation">
+    <a href="/security.html" class="sidebar-brand">Aikrhis<span>Admin dashboard</span></a>
+    <p class="sidebar-label">Manage your system</p>
+    <nav class="sidebar-nav" aria-label="Dashboard sections">
+      <a href="#dashboard" data-admin-nav="dashboard"><span aria-hidden="true">01</span>Dashboard</a>
+      <a href="#users" data-admin-nav="users"><span aria-hidden="true">02</span>User accounts</a>
+      <a href="#alerts" data-admin-nav="alerts"><span aria-hidden="true">03</span>Security alerts <b id="sidebar-alert-count" class="security-badge hidden" aria-label="Open alerts">0</b></a>
+      <a href="#reports" data-admin-nav="reports"><span aria-hidden="true">04</span>Audit reports</a>
+      <a href="#monitor" data-admin-nav="monitor"><span aria-hidden="true">05</span>AI monitoring</a>
+      <a href="#account" data-admin-nav="account"><span aria-hidden="true">06</span>My account</a>
+      <a href="#activity" data-admin-nav="activity"><span aria-hidden="true">07</span>My activity</a>
+    </nav>
+    <div class="sidebar-account"><p id="admin-identity"></p><button id="sidebar-logout" type="button">Log out</button></div>
+  </aside>
+  <header class="security-header"><a href="/security.html" class="security-brand">AIKRHIS <span>// Security Center</span></a><nav><button id="sidebar-toggle" type="button" class="sidebar-toggle hidden" aria-expanded="false" aria-controls="admin-sidebar">Menu</button><a id="center-workspace" href="/dashboard" class="hidden">Cipher workspace</a><button id="center-logout" type="button" class="hidden">Log out</button></nav></header>
+  <main class="security-shell">
+    <p class="eyebrow">Account &amp; security operations</p>
+    <h1 id="center-title" tabindex="-1">Checking your session...</h1>
+    <p id="center-message" class="center-message" role="status" aria-live="polite"></p>
+    <div id="admin-notification" class="admin-notification hidden" role="status" aria-live="polite"><span id="admin-notification-text"></span><button type="button" data-dashboard-view="alerts">Review alerts</button></div>
+    <p id="sign-in-prompt" class="hidden">Sign in through the <a href="/">cipher workspace</a> to access your account.</p>
+
+    <div id="signed-in-content" class="hidden">
+      <section class="security-card" data-admin-view="account" aria-labelledby="profile-title">
+        <h2 id="profile-title">Your account</h2>
+        <p id="account-identity"></p>
+        <div class="account-forms">
+          <form id="profile-form"><label for="profile-name">Display name</label><input id="profile-name" minlength="2" maxlength="60" required><button type="submit">Save profile</button></form>
+          <form id="password-form"><label for="current-password">Current password</label><input id="current-password" type="password" autocomplete="current-password" maxlength="128" required><label for="new-password">New password</label><input id="new-password" type="password" autocomplete="new-password" minlength="12" maxlength="128" required><label for="confirm-password">Confirm new password</label><input id="confirm-password" type="password" autocomplete="new-password" minlength="12" maxlength="128" required><button type="submit">Change password &amp; sign out</button></form>
+        </div>
+      </section>
+      <section class="security-card" data-admin-view="activity" aria-labelledby="own-activity-title"><h2 id="own-activity-title">Your recent activity</h2><div id="own-activity" class="table-scroll"></div></section>
+    </div>
+
+    <div id="admin-content" class="hidden">
+      <section data-admin-view="dashboard">
+      <div class="security-section-heading"><div><p class="eyebrow">System summary</p><h2 id="dashboard-greeting">Welcome back</h2><p class="secondary-copy">Review account activity and security at a glance.</p></div><button id="refresh-dashboard" type="button">Refresh</button></div>
+      <p id="dashboard-status" class="dashboard-status" role="status"></p>
+      <div id="summary-cards" class="summary-cards"></div>
+      <div class="admin-dashboard-grid">
+        <section class="security-card"><h2>Recent activity</h2><p class="secondary-copy">Latest activity across all accounts.</p><div id="dashboard-activity" class="table-scroll"></div></section>
+        <section class="security-card dashboard-shortcuts"><h2>Quick actions</h2>
+          <button type="button" data-dashboard-view="users">Manage user accounts <span aria-hidden="true">→</span></button>
+          <button type="button" data-dashboard-view="alerts">Review security alerts <span aria-hidden="true">→</span></button>
+          <button type="button" data-dashboard-view="reports">Open audit reports <span aria-hidden="true">→</span></button>
+          <button type="button" data-dashboard-view="monitor">View AI monitoring <span aria-hidden="true">→</span></button>
+          <p id="dashboard-updated" class="secondary-copy"></p>
+        </section>
+      </div>
+      </section>
+      <section class="security-card" data-admin-view="monitor"><h2>AI monitoring</h2><p id="model-status"></p><p id="model-details" class="secondary-copy"></p><p id="model-training" class="secondary-copy"></p><p id="storage-status" class="secondary-copy"></p><h3>Recent model assessments</h3><div id="ai-assessments" class="table-scroll"></div></section>
+      <section class="security-card" data-admin-view="alerts"><h2>Administrator alerts <span id="unread-count" class="security-badge"></span></h2><p class="secondary-copy">Open alerts refresh every 15 seconds while this page is visible.</p><div id="alert-list" class="alert-list"></div></section>
+      <section class="security-card" data-admin-view="users"><h2>User accounts</h2><p class="secondary-copy">Role and account-status changes revoke existing sessions. Your own account is protected from these controls.</p><div id="user-list" class="table-scroll"></div></section>
+      <section class="security-card" data-admin-view="reports">
+        <h2>Audit reports</h2>
+        <form id="log-filters" class="log-filters">
+          <label>Record type<select id="log-type"><option value="activity">User activities</option><option value="accounts">Account changes</option><option value="security">Security events / anomalies</option><option value="alerts">Alerts</option></select></label>
+          <label>Actor<select id="log-user"><option value="">All users</option></select></label>
+          <label>Action<input id="log-action" placeholder="e.g. login"></label>
+          <label>From date<input id="log-from" type="date"></label>
+          <button type="submit">Apply filters</button><button id="export-report" type="button">Export CSV</button>
+        </form>
+        <div id="audit-table" class="table-scroll"></div>
+        <div class="report-pagination"><button id="previous-page" type="button">Previous</button><span id="page-label"></span><button id="next-page" type="button">Next</button></div>
+      </section>
+    </div>
+  </main>
+  <footer><span>AIKRHIS // SECURITY OPERATIONS</span><span>Audit records exclude passwords, cipher keys, and message content.</span></footer>
+  <script src="api.js"></script><script src="security-center.js"></script>
+</body>
+</html>

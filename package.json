@@ -1,0 +1,27 @@
+{
+  "name": "mongodb-project",
+  "version": "1.0.0",
+  "description": "Aikrhis cryptography with authentication, audit logs and AI security monitoring",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "node --test test/*.test.js",
+    "setup:admin": "node scripts/create-admin.js",
+    "demo:security": "node scripts/security-demo.js",
+    "demo:start": "node scripts/security-demo.js --serve"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "mongodb": "^7.5.0",
+    "nodemailer": "^10.1.0",
+    "pg": "^8.23.1"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.5.9"
+  }
+}
