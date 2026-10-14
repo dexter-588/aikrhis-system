@@ -64,14 +64,12 @@ test('blocks encoded directory traversal and reports missing files', async () =>
 });
 
 test('serves the complete Aikrhis interface and assets', async () => {
-  const [page, styles, gameTheme, client, auth, companion, petAsset, securityClient] = await Promise.all([
+  const [page, styles, gameTheme, client, auth, securityClient] = await Promise.all([
     request('/'),
     request('/cipherlab.css'),
     request('/game-theme.css'),
     request('/app.js'),
     request('/auth.js'),
-    request('/companion.js'),
-    request('/assets/aikrhis-bot-pet.png'),
     request('/security-center.js')
   ]);
 
@@ -92,12 +90,7 @@ test('serves the complete Aikrhis interface and assets', async () => {
   assert.match(page.body, /id="resend-verification"/);
   assert.match(page.body, /game-theme\.css/);
   assert.match(page.body, /Command the cipher/);
-  assert.match(page.body, /id="bot-companion"/);
-  assert.match(page.body, /aikrhis-bot-pet\.png/);
-  assert.match(page.body, /class="bot-articulated"/);
-  assert.match(page.body, /bot-part-front-a/);
-  assert.match(page.body, /class="sr-only bot-announcer"/);
-  assert.match(page.body, /companion\.js/);
+  assert.doesNotMatch(page.body, /bot-companion|aikrhis-bot-pet|companion\.js/);
   assert.doesNotMatch(page.body, /class="hero-stats"/);
 
   assert.equal(styles.statusCode, 200);
@@ -112,11 +105,6 @@ test('serves the complete Aikrhis interface and assets', async () => {
   assert.match(gameTheme.contentType, /^text\/css/);
   assert.match(gameTheme.body, /LIVE CIPHER MODULE/);
   assert.match(gameTheme.body, /\.mission-strip/);
-  assert.match(gameTheme.body, /\.bot-companion/);
-  assert.match(gameTheme.body, /@keyframes bot-idle-motion/);
-  assert.match(gameTheme.body, /@keyframes bot-patrol-path/);
-  assert.match(gameTheme.body, /@keyframes bot-run-limb-a/);
-  assert.match(gameTheme.body, /--bot-patrol-left/);
   assert.match(gameTheme.body, /@media \(max-width: 767px\)/);
 
   assert.equal(client.statusCode, 200);
@@ -130,19 +118,6 @@ test('serves the complete Aikrhis interface and assets', async () => {
   assert.match(auth.body, /\/api\/auth\//);
   assert.match(auth.body, /api\.setSession/);
 
-  assert.equal(companion.statusCode, 200);
-  assert.match(companion.contentType, /^text\/javascript/);
-  assert.match(companion.body, /function trackPointer/);
-  assert.match(companion.body, /function greet/);
-  assert.match(companion.body, /function runPatrol/);
-  assert.match(companion.body, /function schedulePatrol/);
-  assert.match(companion.body, /PATROL_DURATION = 1800/);
-  assert.match(companion.body, /hasAutoPatrolled/);
-  assert.match(companion.body, /prefers-reduced-motion/);
-  assert.match(companion.body, /animationend/);
-
-  assert.equal(petAsset.statusCode, 200);
-  assert.equal(petAsset.contentType, 'image/png');
   assert.equal(securityClient.statusCode, 200);
   assert.match(securityClient.contentType, /^text\/javascript/);
 });
