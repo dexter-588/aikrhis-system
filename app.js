@@ -9,7 +9,7 @@ const { SecurityService } = require('./src/security');
 dotenv.config({ path: path.join(__dirname, '.env'), quiet: true });
 
 function configuration(overrides = {}) {
-  return { storage: process.env.SECURITY_STORAGE || 'postgres', postgresUrl: process.env.DATABASE_URL, postgresCaPath: process.env.PGSSLROOTCERT, mongoUri: process.env.MONGODB_URI, database: process.env.SECURITY_DATABASE || 'aikrhis_security', dbPath: process.env.SECURITY_SQLITE_PATH, secureCookies: process.env.NODE_ENV === 'production', origin: process.env.PUBLIC_ORIGIN,
+  return { host: process.env.HOST || (process.env.NODE_ENV === 'production' ? '0.0.0.0' : '127.0.0.1'), port: Number(process.env.PORT) || 3000, storage: process.env.SECURITY_STORAGE || 'postgres', postgresUrl: process.env.DATABASE_URL, postgresCaPath: process.env.PGSSLROOTCERT, mongoUri: process.env.MONGODB_URI, database: process.env.SECURITY_DATABASE || 'aikrhis_security', dbPath: process.env.SECURITY_SQLITE_PATH, secureCookies: process.env.NODE_ENV === 'production', origin: process.env.PUBLIC_ORIGIN,
     mail: { production: process.env.NODE_ENV === 'production', mode: process.env.MAIL_MODE, host: process.env.SMTP_HOST, port: process.env.SMTP_PORT, user: process.env.SMTP_USER, password: process.env.SMTP_PASSWORD, from: process.env.MAIL_FROM }, ...overrides };
 }
 function createServer(options = {}) {
@@ -74,9 +74,10 @@ function createServer(options = {}) {
   return server;
 }
 if (require.main === module) {
-  const server = createServer();
+  const config = configuration();
+  const server = createServer(config);
   server.ready.then(() => {
-    server.listen(Number(process.env.PORT) || 3000, process.env.HOST || '127.0.0.1', () => console.log(`Aikrhis is ready at http://localhost:${server.address().port} (${server.store.kind})`));
+    server.listen(config.port, config.host, () => console.log(`Aikrhis is ready at ${config.origin || `http://localhost:${server.address().port}`} (${server.store.kind})`));
   }).catch(error => {
     const certificateErrors = ['SELF_SIGNED_CERT_IN_CHAIN', 'DEPTH_ZERO_SELF_SIGNED_CERT', 'UNABLE_TO_VERIFY_LEAF_SIGNATURE', 'UNABLE_TO_GET_ISSUER_CERT_LOCALLY'];
     if (certificateErrors.includes(error.code)) {

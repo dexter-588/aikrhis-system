@@ -1,5 +1,7 @@
 # Aikrhis
 
+For online deployment and the custom subdomain, see [DEPLOYMENT.md](DEPLOYMENT.md).
+
 The Node application uses Supabase PostgreSQL by default. Existing authentication remains in the application; Supabase Auth is not required.
 
 ## Supabase setup
